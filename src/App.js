@@ -1,7 +1,7 @@
 import './App.css';
 import Header from './components/Header';
 import Button from './components/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Tasks from './components/Tasks';
 import Addtask from './components/Addtask';
 
@@ -9,34 +9,22 @@ function App() {
 
   const [count, setCount] = useState(0);
   const [show, setShow] = useState(false);
-  const [tasks, setTasks] = useState( [
-      {
-          "id": 1,
-          "text": "Doctors Appointment",
-          "day": "Feb 5th at 2:30pm",
-          "reminder": true
-        },
-        {
-          "id": 2,
-          "text": "Meeting at School",
-          "day": "Feb 6th at 1:30pm",
-          "reminder": true
-        },
-        {
-          "id": 3,
-          "text": "Doctors Appointment Not",
-          "day": "Feb 5th at 2:30pm",
-          "reminder": false
-        },
-        {
-          "id": 4,
-          "text": "Meeting at School Not",
-          "day": "Feb 6th at 1:30pm",
-          "reminder": false
-        }
+  const [tasks, setTasks] = useState( [] )
+  useEffect(() =>{
+    const getTasks = async () =>{
+      const taskFromServer = await fetchTasks();
+      setTasks(taskFromServer);
+    }
+    getTasks();
+  }, [])
+
+  const fetchTasks = async () =>{
+    const response = await fetch("http://localhost:5000/tasks");
+    const data = response.json();
+    return data;
+  }
   
-  ]
-  )
+  
   const click = ()=>{
     //alert("Hi how are you")
     setCount(count +1)
@@ -46,13 +34,27 @@ function App() {
   //   //alert("Hi how are you")
   //   setCount(count - 1)
   // }
-  const addTask = (task)=>{
-    const id= Math.floor(Math.random() *10000)+1;
-    const newTask = {id, ...task};
-    setTasks([...tasks, newTask]);
+  const addTask = async(task)=>{
+    //const id= Math.floor(Math.random() *10000)+1;
+    // const newTask = {id, ...task};
+    // setTasks([...tasks, newTask]);
+
+    const response = await fetch('http://localhost:5000/tasks', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(task),
+    })
+
+    const data =await response.json();
+    setTasks([...tasks, data]);
 
   }
-  const deleteTask = (id) =>{
+  const deleteTask = async (id) =>{
+    await fetch(`http://localhost:5000/tasks/${id}`,
+      {method: 'DELETE'}
+    )
     setTasks(tasks.filter((task)=>task.id !==id))
   }
 
@@ -69,7 +71,7 @@ function App() {
     <div className="App">
       <h1>Hello World</h1>
       <Header title='Shuvashish' gem='Debnath' />
-      <Button color={show?'green':'red'} title="Click me" onClick={click} count={count} />
+      <Button color={show?'green':'red'} title="Add Task" onClick={click} count={count} />
       {show &&
       <Addtask onAdd={addTask}/>
       }
