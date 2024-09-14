@@ -17,12 +17,6 @@
       "day": "Monday",
       "reminder": true,
       "id": 3
-    },
-    {
-      "text": "sdf",
-      "day": "sdfsd",
-      "reminder": true,
-      "id": 4
     }
   ]
 }

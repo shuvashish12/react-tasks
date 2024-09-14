@@ -12,12 +12,11 @@ function App() {
   const [tasks, setTasks] = useState( [] )
   useEffect(() =>{
     const getTasks = async () =>{
-      const taskFromServer = await fetchTasks();
-      setTasks(taskFromServer);
+    const taskFromServer = await fetchTasks();
+    setTasks(taskFromServer);
     }
     getTasks();
   }, [])
-
   const fetchTasks = async () =>{
     const response = await fetch("http://localhost:5000/tasks");
     const data = response.json();
@@ -77,13 +76,8 @@ function App() {
       }
       {/* <Button color='green' title="Dont Click me" onClick={dontClick} count={count} /> */}
       <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder}/>
-
       
     </div>
   );
 }
-
-
-
-
 export default App;
